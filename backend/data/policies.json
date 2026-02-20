@@ -1,0 +1,10 @@
+[
+  {
+    "policy_name": "Health Secure",
+    "coverage_amount": 500000,
+    "premium": 8000,
+    "duration_years": 5,
+    "company_id": 1,
+    "category_id": 1
+  }
+]

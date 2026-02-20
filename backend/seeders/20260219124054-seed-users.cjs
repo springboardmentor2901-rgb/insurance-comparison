@@ -4,20 +4,24 @@ const path = require("path");
 
 module.exports = {
   async up(queryInterface) {
-    const users = JSON.parse(
-      fs.readFileSync(path.join(__dirname, "../data/users.json"))
+
+    const data = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, "../data/users.json"),
+        "utf-8"
+      )
     );
 
-    const formattedUsers = users.map((user) => ({
-      ...user,
+    const formattedData = data.map(item => ({
+      ...item,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     }));
 
-    await queryInterface.bulkInsert("Users", formattedUsers);
+    await queryInterface.bulkInsert("Users", formattedData);
   },
 
   async down(queryInterface) {
     await queryInterface.bulkDelete("Users", null, {});
-  },
+  }
 };
