@@ -8,6 +8,7 @@ export default function LoginPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
     const [apiError, setApiError] = useState('');
+    const [successMsg, setSuccessMsg] = useState('');
     const [loading, setLoading] = useState(false);
     const { login, register } = useAuth();
     const navigate = useNavigate();
@@ -25,6 +26,10 @@ export default function LoginPage() {
         else if (!/\S+@\S+\.\S+/.test(formData.email)) errs.email = 'Enter a valid email';
         if (!formData.password) errs.password = 'Password is required';
         else if (formData.password.length < 5) errs.password = 'Min 5 characters';
+        if (mode === 'register' && formData.password && formData.password.length >= 5) {
+            if (!/[A-Z]/.test(formData.password)) errs.password = 'Include at least 1 uppercase letter';
+            else if (!/[0-9]/.test(formData.password)) errs.password = 'Include at least 1 number';
+        }
         setErrors(errs);
         return Object.keys(errs).length === 0;
     };
@@ -34,13 +39,19 @@ export default function LoginPage() {
         if (!validate()) return;
         setLoading(true);
         setApiError('');
+        setSuccessMsg('');
         try {
             if (mode === 'login') {
                 await login(formData.email, formData.password);
+                navigate('/');
             } else {
                 await register(formData.fullName, formData.email, formData.password, formData.phone);
+                // After registration, switch to login mode so user logs in
+                setSuccessMsg('🎉 Account created successfully! Please sign in with your credentials.');
+                setMode('login');
+                // Keep email, clear password
+                setFormData({ ...formData, password: '', fullName: '', phone: '' });
             }
-            navigate('/');
         } catch (err) {
             setApiError(err.message || 'Something went wrong. Please try again.');
         }
@@ -51,6 +62,7 @@ export default function LoginPage() {
         setMode(mode === 'login' ? 'register' : 'login');
         setErrors({});
         setApiError('');
+        setSuccessMsg('');
     };
 
     return (
@@ -83,11 +95,12 @@ export default function LoginPage() {
                             {mode === 'login' ? 'Sign in to access your insurance dashboard' : 'Join InsureCompare to protect what matters most'}
                         </p>
 
-                        {apiError && <div className="login-alert">{apiError}</div>}
+                        {apiError && <div className="login-alert error">{apiError}</div>}
+                        {successMsg && <div className="login-alert success">{successMsg}</div>}
 
                         {mode === 'register' && (
                             <div className="form-group animate-field" style={{ animationDelay: '0.05s' }}>
-                                <label>Full Name</label>
+                                <label>Full Name *</label>
                                 <div className="input-wrapper">
                                     <span className="input-icon">👤</span>
                                     <input type="text" className="form-input login-input" placeholder="Your full name" value={formData.fullName} onChange={(e) => updateField('fullName', e.target.value)} />
@@ -97,7 +110,7 @@ export default function LoginPage() {
                         )}
 
                         <div className="form-group animate-field" style={{ animationDelay: '0.1s' }}>
-                            <label>Email Address</label>
+                            <label>Email Address *</label>
                             <div className="input-wrapper">
                                 <span className="input-icon">📧</span>
                                 <input type="email" className="form-input login-input" placeholder="you@example.com" value={formData.email} onChange={(e) => updateField('email', e.target.value)} />
@@ -106,7 +119,7 @@ export default function LoginPage() {
                         </div>
 
                         <div className="form-group animate-field" style={{ animationDelay: '0.15s' }}>
-                            <label>Password</label>
+                            <label>Password *</label>
                             <div className="input-wrapper">
                                 <span className="input-icon">🔒</span>
                                 <input
@@ -127,6 +140,11 @@ export default function LoginPage() {
                                 </button>
                             </div>
                             {errors.password && <div className="form-error">{errors.password}</div>}
+                            {mode === 'register' && (
+                                <div className="password-rules">
+                                    Must be 5+ chars with 1 uppercase letter and 1 number
+                                </div>
+                            )}
                         </div>
 
                         {mode === 'register' && (
@@ -142,12 +160,6 @@ export default function LoginPage() {
                         <button type="submit" className="btn btn-primary login-btn" disabled={loading}>
                             {loading ? <span className="spinner"></span> : mode === 'login' ? '🚀 Sign In' : '✨ Create Account'}
                         </button>
-
-                        {mode === 'login' && (
-                            <div className="demo-hint">
-                                <strong>Demo:</strong> demo@insurance.com / demo123
-                            </div>
-                        )}
 
                         <div className="login-switch">
                             {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
