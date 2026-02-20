@@ -1,3 +1,7 @@
+//P
+import { connectDB } from './config/database.js';
+import User from './models/User.js';
+//P
 import express from 'express';
 import cors from 'cors';
 import policiesRouter from './routes/policies.js';
@@ -8,7 +12,7 @@ import authRouter from './routes/auth.js';
 import quotesRouter from './routes/quotes.js';
 
 const app = express();
-const PORT = 5000;
+const PORT = 5001;
 
 // Middleware
 app.use(cors({ origin: 'http://localhost:5173' }));
@@ -32,6 +36,20 @@ app.use('/api/quotes', quotesRouter);
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Insurance API is running' });
 });
+
+//P
+const startServer = async () => {
+  await connectDB();
+
+  await User.sync();
+  console.log('✅ User table synced');
+
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
 
 // Start server
 app.listen(PORT, () => {
