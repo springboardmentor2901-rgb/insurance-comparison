@@ -1,35 +1,39 @@
 import { useState } from 'react';
 import { useClaims } from '../context/ClaimsContext';
+import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 export default function ClaimTrackingPage() {
     const { claims, loading } = useClaims();
+    const { user } = useAuth();
     const [searchId, setSearchId] = useState('');
     const [filteredClaims, setFilteredClaims] = useState(null);
+
+    // Only show pending claims (Submitted + Under Review)
+    const activeClaims = claims.filter(c => c.status === 'Submitted' || c.status === 'Under Review');
 
     const handleSearch = () => {
         if (!searchId.trim()) { setFilteredClaims(null); return; }
         const s = searchId.toLowerCase();
-        const results = claims.filter(c =>
+        const results = activeClaims.filter(c =>
             c.id.toLowerCase().includes(s) ||
             c.policyName?.toLowerCase().includes(s) ||
-            c.policyNumber?.toLowerCase().includes(s) ||
-            c.fullName?.toLowerCase().includes(s)
+            c.policyNumber?.toLowerCase().includes(s)
         );
         setFilteredClaims(results);
     };
 
     const handleKeyDown = (e) => { if (e.key === 'Enter') handleSearch(); };
-    const displayClaims = filteredClaims !== null ? filteredClaims : claims;
+    const displayClaims = filteredClaims !== null ? filteredClaims : activeClaims;
     const formatCurrency = (val) => val ? '₹' + val.toLocaleString('en-IN') : '—';
 
-    const statusStyles = { 'Approved': 'badge-green', 'Under Review': 'badge-amber', 'Submitted': 'badge-blue', 'Rejected': 'badge-red' };
+    const statusStyles = { 'Under Review': 'badge-amber', 'Submitted': 'badge-blue' };
     const claimTypeLabels = { 'hospitalization': 'Hospitalization', 'accident': 'Accident', 'property-damage': 'Property Damage', 'theft': 'Theft/Burglary', 'death-benefit': 'Death Benefit', 'cyber-fraud': 'Cyber Fraud', 'travel-emergency': 'Travel Emergency', 'other': 'Other' };
 
     if (loading) {
         return (
             <div className="page"><div className="container" style={{ textAlign: 'center', padding: '80px 20px' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div><h2>Loading claims...</h2>
+                <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div><h2>Loading your claims...</h2>
             </div></div>
         );
     }
@@ -38,29 +42,31 @@ export default function ClaimTrackingPage() {
         <div className="page">
             <div className="container">
                 <div className="page-header">
-                    <h1>📊 Claim Tracker</h1>
-                    <p>Track the status of your insurance claims in real-time with detailed timeline updates.</p>
+                    <h1>📊 Track Claims</h1>
+                    <p>View your active claims that are pending review or verification. For resolved claims, check your <Link to="/claim-history" style={{ color: 'var(--accent-teal)' }}>filing history</Link>.</p>
                 </div>
                 <div className="tracking-layout">
-                    <div className="search-bar">
-                        <input type="text" className="form-input" placeholder="Search by Claim ID, Policy Number, or Name..." value={searchId} onChange={(e) => setSearchId(e.target.value)} onKeyDown={handleKeyDown} />
-                        <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-                        {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>All</button>}
-                    </div>
+                    {activeClaims.length > 0 && (
+                        <>
+                            <div className="search-bar">
+                                <input type="text" className="form-input" placeholder="Search by Claim ID or Policy Number..." value={searchId} onChange={(e) => setSearchId(e.target.value)} onKeyDown={handleKeyDown} />
+                                <button className="btn btn-primary" onClick={handleSearch}>Search</button>
+                                {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>All</button>}
+                            </div>
 
-                    <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                        <span className="badge badge-blue">{claims.length} Total Claims</span>
-                        <span className="badge badge-green">{claims.filter(c => c.status === 'Approved').length} Approved</span>
-                        <span className="badge badge-amber">{claims.filter(c => c.status === 'Under Review').length} Under Review</span>
-                        <span className="badge badge-teal">{claims.filter(c => c.status === 'Submitted').length} Submitted</span>
-                    </div>
+                            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
+                                <span className="badge badge-blue">{activeClaims.filter(c => c.status === 'Submitted').length} Submitted</span>
+                                <span className="badge badge-amber">{activeClaims.filter(c => c.status === 'Under Review').length} Under Review</span>
+                            </div>
+                        </>
+                    )}
 
                     {displayClaims.map((claim, idx) => (
                         <div key={claim.id} className="glass-card claim-track-card" style={{ animationDelay: `${idx * 0.1}s` }}>
                             <div className="claim-track-header">
                                 <div>
                                     <h3>{claim.id}</h3>
-                                    {claim.fullName && <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Filed by {claim.fullName}</span>}
+                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{claim.policyName}</span>
                                 </div>
                                 <span className={`badge ${statusStyles[claim.status] || 'badge-blue'}`}>{claim.status}</span>
                             </div>
@@ -69,13 +75,7 @@ export default function ClaimTrackingPage() {
                                 <div className="claim-meta-item"><span className="label">Type</span><span className="value">{claimTypeLabels[claim.claimType] || claim.type || '—'}</span></div>
                                 <div className="claim-meta-item"><span className="label">Amount</span><span className="value">{formatCurrency(claim.amount)}</span></div>
                                 <div className="claim-meta-item"><span className="label">Filed On</span><span className="value">{claim.filedDate}</span></div>
-                                {claim.filesCount > 0 && <div className="claim-meta-item"><span className="label">Documents</span><span className="value">{claim.filesCount} file(s)</span></div>}
                             </div>
-                            {claim.description && (
-                                <div style={{ marginBottom: '16px', padding: '12px', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                                    <strong style={{ color: 'var(--text-muted)' }}>Description: </strong>{claim.description}
-                                </div>
-                            )}
                             <div className="timeline">
                                 {claim.timeline.map((item, index) => (
                                     <div key={index} className={`timeline-item ${item.status}`}>
@@ -90,11 +90,14 @@ export default function ClaimTrackingPage() {
 
                     {displayClaims.length === 0 && (
                         <div className="glass-card" style={{ padding: '48px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>🔍</div>
-                            <h3 style={{ marginBottom: '8px' }}>No claims found</h3>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>{filteredClaims !== null ? 'Try searching with a different Claim ID, Policy Number, or Name.' : 'No claims have been filed yet.'}</p>
+                            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>✅</div>
+                            <h3 style={{ marginBottom: '8px' }}>No active claims</h3>
+                            <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
+                                {filteredClaims !== null ? 'No pending claims match your search.' : 'All your claims have been resolved! You\'re all clear.'}
+                            </p>
                             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>Show All Claims</button>}
+                                {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>Show All</button>}
+                                <Link to="/claim-history" className="btn btn-secondary">📜 View History</Link>
                                 <Link to="/file-claim" className="btn btn-primary">📋 File a New Claim</Link>
                             </div>
                         </div>

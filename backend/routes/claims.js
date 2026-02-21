@@ -3,22 +3,27 @@ import { claims, addClaim } from '../data/mockData.js';
 
 const router = express.Router();
 
-// GET /api/claims - Get all claims (with optional search)
+// GET /api/claims - Get claims (with optional userId filter and search)
 router.get('/', (req, res) => {
-    const { search } = req.query;
+    const { search, userId } = req.query;
+    let result = [...claims];
+
+    // Filter by userId if provided (for user-specific claim tracking)
+    if (userId) {
+        result = result.filter(c => c.userId === parseInt(userId));
+    }
 
     if (search) {
         const s = search.toLowerCase();
-        const filtered = claims.filter(c =>
+        result = result.filter(c =>
             c.id.toLowerCase().includes(s) ||
             (c.policyName && c.policyName.toLowerCase().includes(s)) ||
             (c.policyNumber && c.policyNumber.toLowerCase().includes(s)) ||
             (c.fullName && c.fullName.toLowerCase().includes(s))
         );
-        return res.json(filtered);
     }
 
-    res.json(claims);
+    res.json(result);
 });
 
 // GET /api/claims/:id - Get single claim
@@ -30,7 +35,7 @@ router.get('/:id', (req, res) => {
 
 // POST /api/claims - Create a new claim
 router.post('/', (req, res) => {
-    const { fullName, email, phone, policyNumber, claimType, incidentDate, description, filesCount } = req.body;
+    const { fullName, email, phone, policyNumber, claimType, incidentDate, description, filesCount, userId } = req.body;
 
     if (!fullName || !email || !policyNumber || !claimType) {
         return res.status(400).json({ error: 'Missing required fields: fullName, email, policyNumber, claimType' });
@@ -39,7 +44,8 @@ router.post('/', (req, res) => {
     const newClaim = addClaim({
         fullName, email, phone, policyNumber,
         claimType, incidentDate, description,
-        filesCount: filesCount || 0
+        filesCount: filesCount || 0,
+        userId: userId || null
     });
 
     res.status(201).json(newClaim);
