@@ -2,39 +2,43 @@ import { connectDB } from '../config/database.js';
 import Provider from '../models/Provider.js';
 import Policy from '../models/Policy.js';
 
-// IMPORTANT: import JS data, not JSON
-import { policies } from '../data/mockData.js';
+import { providers, policies } from '../data/insuranceData.js';
 
 const migrate = async () => {
   await connectDB();
 
-  /* 1️⃣ Create Providers based on policy types */
-  const providerMap = {};
+  console.log('🧹 Clearing old policy data...');
+  await Policy.destroy({ where: {} });
 
-  for (const policy of policies) {
-    if (!providerMap[policy.type]) {
-      const provider = await Provider.create({
-        name: `${policy.type} Insurance Provider`,
-        type: policy.type,
-        rating: policy.rating
-      });
+  console.log('🧹 Clearing old provider data...');
+  await Provider.destroy({ where: {} });
 
-      providerMap[policy.type] = provider.id;
-    }
-  }
-
-  /* 2️⃣ Create Policies */
-  for (const policy of policies) {
-    await Policy.create({
-      name: policy.name,
-      coverage_amount: policy.coverage,
-      premium: policy.premium,
-      term_years: policy.duration,
-      provider_id: providerMap[policy.type]
+  /* 1️⃣ Insert Providers */
+  console.log('📦 Inserting providers...');
+  for (const provider of providers) {
+    await Provider.create({
+      id: provider.id,
+      name: provider.name,
+      type: provider.type,
+      rating: provider.rating ?? null,
+      contact_email: provider.contact_email ?? null
     });
   }
 
-  console.log('✅ mockData.js migrated successfully to SQL');
+  /* 2️⃣ Insert Policies */
+  console.log('📦 Inserting policies...');
+  for (const policy of policies) {
+    await Policy.create({
+      name: policy.name,
+      segment: policy.segment,
+      coverage_amount: policy.coverage_amount,
+      premium: policy.premium,
+      term_years: policy.term_years,
+      provider_id: policy.provider_id
+    });
+  }
+
+  console.log('✅ Providers & policies migrated successfully');
   process.exit(0);
 };
 

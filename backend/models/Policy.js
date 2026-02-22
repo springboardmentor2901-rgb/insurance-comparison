@@ -16,6 +16,11 @@ const Policy = sequelize.define(
       allowNull: false
     },
 
+    segment: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
     coverage_amount: {
       type: DataTypes.FLOAT,
       allowNull: false
@@ -38,6 +43,7 @@ const Policy = sequelize.define(
         key: 'id'
       }
     }
+    
   },
   {
     tableName: 'policies',
