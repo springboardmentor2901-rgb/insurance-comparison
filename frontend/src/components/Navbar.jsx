@@ -1,13 +1,17 @@
 import { useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
-    const { user, isAuthenticated, logout } = useAuth();
+    const { user, isAuthenticated, isAdmin, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const profileRef = useRef(null);
+
+    // Check if we're on an admin page
+    const isAdminPage = location.pathname.startsWith('/admin');
 
     const handleLogout = () => {
         setProfileOpen(false);
@@ -42,9 +46,9 @@ export default function Navbar() {
     return (
         <nav className="navbar">
             <div className="container">
-                <NavLink to="/" className="navbar-logo">
+                <NavLink to={isAdmin ? '/admin' : '/'} className="navbar-logo">
                     <div className="logo-icon">🛡️</div>
-                    <span>InsureVault</span>
+                    <span>InsureCompare</span>
                 </NavLink>
 
                 <button className="navbar-toggle" onClick={() => setMenuOpen(!menuOpen)}>
@@ -52,13 +56,32 @@ export default function Navbar() {
                 </button>
 
                 <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-                    <NavLink to="/" onClick={() => setMenuOpen(false)}>Home</NavLink>
-                    <NavLink to="/get-quote" onClick={() => setMenuOpen(false)}>Get Quote</NavLink>
-                    <NavLink to="/compare" onClick={() => setMenuOpen(false)}>Compare</NavLink>
-                    <NavLink to="/calculator" onClick={() => setMenuOpen(false)}>Calculator</NavLink>
-                    <NavLink to="/recommendations" onClick={() => setMenuOpen(false)}>For You</NavLink>
-                    <NavLink to="/file-claim" onClick={() => setMenuOpen(false)}>File Claim</NavLink>
-                    <NavLink to="/track-claim" onClick={() => setMenuOpen(false)}>Track</NavLink>
+                    {/* Show user links ONLY for non-admin users */}
+                    {!isAdmin && (
+                        <>
+                            <NavLink to="/" onClick={() => setMenuOpen(false)}>Home</NavLink>
+                            <NavLink to="/get-quote" onClick={() => setMenuOpen(false)}>Get Quote</NavLink>
+                            <NavLink to="/compare" onClick={() => setMenuOpen(false)}>Compare</NavLink>
+                            <NavLink to="/calculator" onClick={() => setMenuOpen(false)}>Calculator</NavLink>
+                            <NavLink to="/recommendations" onClick={() => setMenuOpen(false)}>For You</NavLink>
+                            <NavLink to="/file-claim" onClick={() => setMenuOpen(false)}>File Claim</NavLink>
+                            <NavLink to="/track-claim" onClick={() => setMenuOpen(false)}>Track</NavLink>
+                            <NavLink to="/claim-history" onClick={() => setMenuOpen(false)}>History</NavLink>
+                        </>
+                    )}
+
+                    {/* Show admin module links for admin users */}
+                    {isAdmin && (
+                        <>
+                            <NavLink to="/admin" end onClick={() => setMenuOpen(false)}>Overview</NavLink>
+                            <NavLink to="/admin/policies" onClick={() => setMenuOpen(false)}>Policies</NavLink>
+                            <NavLink to="/admin/claims" onClick={() => setMenuOpen(false)}>Claims</NavLink>
+                            <NavLink to="/admin/clients" onClick={() => setMenuOpen(false)}>Clients & Agents</NavLink>
+                            <NavLink to="/admin/billing" onClick={() => setMenuOpen(false)}>Billing</NavLink>
+                            <NavLink to="/admin/compliance" onClick={() => setMenuOpen(false)}>Compliance</NavLink>
+                            <NavLink to="/admin/support" onClick={() => setMenuOpen(false)}>Support</NavLink>
+                        </>
+                    )}
 
                     {isAuthenticated ? (
                         <div className="navbar-user" ref={profileRef}>
@@ -81,6 +104,7 @@ export default function Navbar() {
                                         </div>
                                         <h3 className="profile-name">{user?.fullName}</h3>
                                         <p className="profile-email">{user?.email}</p>
+                                        {isAdmin && <span className="profile-role-badge">Admin</span>}
                                     </div>
 
                                     <div className="profile-dropdown-body">
@@ -123,4 +147,3 @@ export default function Navbar() {
         </nav>
     );
 }
-

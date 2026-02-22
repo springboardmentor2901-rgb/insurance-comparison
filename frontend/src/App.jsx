@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ClaimsProvider } from './context/ClaimsContext';
 import Navbar from './components/Navbar';
@@ -13,6 +13,8 @@ import PremiumCalculatorPage from './pages/PremiumCalculatorPage';
 import RecommendationsPage from './pages/RecommendationsPage';
 import ClaimFilingPage from './pages/ClaimFilingPage';
 import ClaimTrackingPage from './pages/ClaimTrackingPage';
+import ClaimHistoryPage from './pages/ClaimHistoryPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 
 function ProtectedRoute({ children }) {
     const { isAuthenticated, loading } = useAuth();
@@ -20,14 +22,23 @@ function ProtectedRoute({ children }) {
     return isAuthenticated ? children : <Navigate to="/login" replace />;
 }
 
+function AdminRoute({ children }) {
+    const { isAuthenticated, isAdmin, loading } = useAuth();
+    if (loading) return <div className="page"><div className="container" style={{ textAlign: 'center', padding: '120px 20px' }}><div className="spinner" style={{ margin: '0 auto' }}></div></div></div>;
+    if (!isAuthenticated) return <Navigate to="/login" replace />;
+    if (!isAdmin) return <Navigate to="/" replace />;
+    return children;
+}
+
 function AppRoutes() {
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, isAdmin } = useAuth();
+    const adminHome = isAdmin ? '/admin' : '/';
 
     return (
         <Routes>
-            <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
-            <Route path="/register" element={isAuthenticated ? <Navigate to="/" replace /> : <RegisterPage />} />
-            <Route path="/" element={<ProtectedRoute><LandingPage /></ProtectedRoute>} />
+            <Route path="/login" element={isAuthenticated ? <Navigate to={adminHome} replace /> : <LoginPage />} />
+            <Route path="/register" element={isAuthenticated ? <Navigate to={adminHome} replace /> : <RegisterPage />} />
+            <Route path="/" element={isAdmin ? <Navigate to="/admin" replace /> : <ProtectedRoute><LandingPage /></ProtectedRoute>} />
             <Route path="/get-quote" element={<ProtectedRoute><QuoteFormPage /></ProtectedRoute>} />
             <Route path="/quote-results" element={<ProtectedRoute><QuoteResultsPage /></ProtectedRoute>} />
             <Route path="/compare" element={<ProtectedRoute><PolicyComparatorPage /></ProtectedRoute>} />
@@ -35,19 +46,23 @@ function AppRoutes() {
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/file-claim" element={<ProtectedRoute><ClaimFilingPage /></ProtectedRoute>} />
             <Route path="/track-claim" element={<ProtectedRoute><ClaimTrackingPage /></ProtectedRoute>} />
+            <Route path="/claim-history" element={<ProtectedRoute><ClaimHistoryPage /></ProtectedRoute>} />
+            <Route path="/admin/*" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         </Routes>
     );
 }
 
 function AppLayout() {
     const { isAuthenticated } = useAuth();
+    const location = useLocation();
+    const isAdminPage = location.pathname.startsWith('/admin');
     return (
         <>
             {isAuthenticated && <Navbar />}
             <main>
                 <AppRoutes />
             </main>
-            {isAuthenticated && <Footer />}
+            {isAuthenticated && !isAdminPage && <Footer />}
         </>
     );
 }
