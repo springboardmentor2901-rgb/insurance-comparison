@@ -7,7 +7,11 @@
         "dev": "node --watch server.js"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.995.0",
         "cors": "^2.8.5",
-        "express": "^4.21.0"
+        "dotenv": "^17.3.1",
+        "express": "^4.21.0",
+        "multer": "^2.0.2",
+        "uuid": "^13.0.0"
     }
 }
