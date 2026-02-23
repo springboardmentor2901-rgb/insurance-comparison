@@ -1,27 +1,17 @@
 "use strict";
 
+const data = require("..data/mockData");
+
 module.exports = {
   async up(queryInterface) {
-    await queryInterface.bulkInsert("Companies", [
-      {
-        company_name: "LIC",
-        rating: 4.5,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        company_name: "HDFC Life",
-        rating: 4.2,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        company_name: "ICICI Prudential",
-        rating: 4.3,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ]);
+
+    const companies = data.companies.map(c => ({
+      ...c,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
+
+    await queryInterface.bulkInsert("Companies", companies);
   },
 
   async down(queryInterface) {

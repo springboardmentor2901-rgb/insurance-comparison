@@ -1,27 +1,20 @@
 "use strict";
 
+const data = require("..data/mockdata");
+
 module.exports = {
   async up(queryInterface) {
-    await queryInterface.bulkInsert("Categories", [
-      {
-        category_name: "Health",
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        category_name: "Vehicle",
-        createdAt: new Date(),
-        updatedAt: new Date()
-      },
-      {
-        category_name: "Life",
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    ]);
+
+    const categories = data.categories.map(c => ({
+      ...c,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }));
+
+    await queryInterface.bulkInsert("categories", categories);
   },
 
   async down(queryInterface) {
-    await queryInterface.bulkDelete("Categories", null, {});
+    await queryInterface.bulkDelete("categories", null, {});
   }
 };
