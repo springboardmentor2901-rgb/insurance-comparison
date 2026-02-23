@@ -15,7 +15,12 @@ export default function PolicyComparatorPage() {
 
     useEffect(() => {
         fetch('/api/policies')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`API Error ${res.status}: Empty response`);
+                }
+                return res.json();
+            })
             .then(data => {
                 setPolicies(data.policies);
                 setPolicyTypes(data.types);

@@ -30,11 +30,16 @@ export default function RecommendationsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(profile)
             });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+            }
             const data = await res.json();
             setRecommendations(data);
             setSubmitted(true);
         } catch (err) {
             console.error('Failed to get recommendations:', err);
+            setErrors({ submit: err.message || 'Failed to get recommendations' });
         }
         setLoading(false);
     };

@@ -8,9 +8,20 @@ export default function AdminCompliance() {
 
     useEffect(() => {
         fetch('/api/admin/compliance', { headers: { Authorization: `Bearer ${token}` } })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    console.error(`Compliance fetch failed: ${res.status} ${res.statusText}`);
+                    return res.text().then(text => {
+                        throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+                    });
+                }
+                return res.json();
+            })
             .then(d => { setData(d); setLoading(false); })
-            .catch(() => setLoading(false));
+            .catch(err => {
+                console.error('AdminCompliance fetch error:', err);
+                setLoading(false);
+            });
     }, [token]);
 
     if (loading) return <div className="admin-page-loading"><div className="spinner"></div><p>Loading compliance...</p></div>;

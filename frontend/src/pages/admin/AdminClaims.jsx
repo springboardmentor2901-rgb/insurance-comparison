@@ -11,9 +11,20 @@ export default function AdminClaims() {
 
     useEffect(() => {
         fetch('/api/claims', { headers: { Authorization: `Bearer ${token}` } })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    console.error(`Claims fetch failed: ${res.status} ${res.statusText}`);
+                    return res.text().then(text => {
+                        throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+                    });
+                }
+                return res.json();
+            })
             .then(data => { setClaims(data); setLoading(false); })
-            .catch(() => setLoading(false));
+            .catch(err => {
+                console.error('AdminClaims fetch error:', err);
+                setLoading(false);
+            });
     }, [token]);
 
     const fmt = (v) => v ? '₹' + v.toLocaleString('en-IN') : '—';

@@ -11,14 +11,27 @@ export default function AdminClients() {
 
     useEffect(() => {
         const headers = { Authorization: `Bearer ${token}` };
+        const fetchJSON = (url) => fetch(url, { headers }).then(res => {
+            if (!res.ok) {
+                console.error(`Fetch failed for ${url}: ${res.status} ${res.statusText}`);
+                return res.text().then(text => {
+                    throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+                });
+            }
+            return res.json();
+        });
+
         Promise.all([
-            fetch('/api/admin/clients', { headers }).then(r => r.json()),
-            fetch('/api/admin/agents', { headers }).then(r => r.json())
+            fetchJSON('/api/admin/clients'),
+            fetchJSON('/api/admin/agents')
         ]).then(([c, a]) => {
             setClients(c);
             setAgents(a);
             setLoading(false);
-        }).catch(() => setLoading(false));
+        }).catch(err => {
+            console.error('AdminClients fetch error:', err);
+            setLoading(false);
+        });
     }, [token]);
 
     const fmt = (v) => '₹' + (v || 0).toLocaleString('en-IN');

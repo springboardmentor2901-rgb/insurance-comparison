@@ -32,10 +32,15 @@ export default function PremiumCalculatorPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+            }
             const data = await res.json();
             setResult(data);
         } catch (err) {
             console.error('Calculation failed:', err);
+            setErrors({ submit: err.message || 'Failed to calculate premium' });
         }
         setLoading(false);
     };
