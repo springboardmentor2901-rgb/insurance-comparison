@@ -1,4 +1,5 @@
 //P
+import { policies } from "./data/mockData.js";
 import { connectDB } from './config/database.js';
 import User from './models/User.js';
 //P
@@ -13,7 +14,7 @@ import quotesRouter from './routes/quotes.js';
 import adminRouter from './routes/admin.js';
 
 const app = express();
-const PORT = 5001;
+const PORT = 5000;
 
 // Middleware
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
@@ -39,6 +40,12 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Insurance API is running' });
 });
 
+
+//might delete 
+app.get("/api/policies", (req, res) => {
+  res.json(policies);
+});
+
 //P
 const startServer = async () => {
   await connectDB();
@@ -46,9 +53,7 @@ const startServer = async () => {
   await User.sync();
   console.log('✅ User table synced');
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+ 
 };
 
 startServer();
