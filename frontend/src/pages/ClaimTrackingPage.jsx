@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useClaims } from '../context/ClaimsContext';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -6,35 +6,111 @@ import { Link } from 'react-router-dom';
 export default function ClaimTrackingPage() {
     const { claims, loading } = useClaims();
     const { user } = useAuth();
-    const [searchId, setSearchId] = useState('');
-    const [filteredClaims, setFilteredClaims] = useState(null);
 
-    // Only show pending claims (Submitted + Under Review)
-    const activeClaims = claims.filter(c => c.status === 'Submitted' || c.status === 'Under Review');
+    const [searchId, setSearchId] = useState('');
+    const [viewMode, setViewMode] = useState('timeline');
+    const [selectedClaims, setSelectedClaims] = useState([]);
+    const [sortField, setSortField] = useState('filedDate');
+    const [sortOrder, setSortOrder] = useState('desc');
+
+    const [filters, setFilters] = useState({
+        status: '',
+        claimType: '',
+        startDate: '',
+        endDate: '',
+        minAmount: 0,
+        maxAmount: 1000000,
+    });
 
     const handleSearch = () => {
-        if (!searchId.trim()) { setFilteredClaims(null); return; }
-        const s = searchId.toLowerCase();
-        const results = activeClaims.filter(c =>
-            c.id.toLowerCase().includes(s) ||
-            c.policyName?.toLowerCase().includes(s) ||
-            c.policyNumber?.toLowerCase().includes(s)
-        );
-        setFilteredClaims(results);
+        if (!searchId.trim()) return;
     };
 
-    const handleKeyDown = (e) => { if (e.key === 'Enter') handleSearch(); };
-    const displayClaims = filteredClaims !== null ? filteredClaims : activeClaims;
-    const formatCurrency = (val) => val ? '₹' + val.toLocaleString('en-IN') : '—';
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') handleSearch();
+    };
 
-    const statusStyles = { 'Under Review': 'badge-amber', 'Submitted': 'badge-blue' };
-    const claimTypeLabels = { 'hospitalization': 'Hospitalization', 'accident': 'Accident', 'property-damage': 'Property Damage', 'theft': 'Theft/Burglary', 'death-benefit': 'Death Benefit', 'cyber-fraud': 'Cyber Fraud', 'travel-emergency': 'Travel Emergency', 'other': 'Other' };
+    const filteredAndSorted = useMemo(() => {
+        let result = [...claims];
+
+        if (searchId.trim()) {
+            const s = searchId.toLowerCase();
+            result = result.filter(c =>
+                c.id.toLowerCase().includes(s) ||
+                c.policyName?.toLowerCase().includes(s) ||
+                c.policyNumber?.toLowerCase().includes(s) ||
+                c.fullName?.toLowerCase().includes(s)
+            );
+        }
+
+        if (filters.status) {
+            result = result.filter(c => c.status === filters.status);
+        }
+
+        if (filters.claimType) {
+            result = result.filter(c => c.claimType === filters.claimType);
+        }
+
+        if (filters.startDate) {
+            result = result.filter(c => new Date(c.filedDate) >= new Date(filters.startDate));
+        }
+
+        if (filters.endDate) {
+            result = result.filter(c => new Date(c.filedDate) <= new Date(filters.endDate));
+        }
+
+        result = result.filter(c => {
+            const amount = c.amount || 0;
+            return amount >= filters.minAmount && amount <= filters.maxAmount;
+        });
+
+        result.sort((a, b) => {
+            let aVal = sortField === 'filedDate' ? new Date(a.filedDate) : a[sortField];
+            let bVal = sortField === 'filedDate' ? new Date(b.filedDate) : b[sortField];
+
+            if (typeof aVal === 'string') {
+                return sortOrder === 'asc'
+                    ? aVal.localeCompare(bVal)
+                    : bVal.localeCompare(aVal);
+            }
+
+            return sortOrder === 'asc' ? aVal - bVal : bVal - aVal;
+        });
+
+        return result;
+    }, [claims, searchId, filters, sortField, sortOrder]);
+
+    const toggleClaimSelection = (id) => {
+        setSelectedClaims(prev =>
+            prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+        );
+    };
+
+    const resetFilters = () => {
+        setFilters({
+            status: '',
+            claimType: '',
+            startDate: '',
+            endDate: '',
+            minAmount: 0,
+            maxAmount: 1000000
+        });
+        setSearchId('');
+        setSortField('filedDate');
+        setSortOrder('desc');
+        setSelectedClaims([]);
+    };
+
+    const formatCurrency = (val) =>
+        val ? `₹${val.toLocaleString('en-IN')}` : '—';
 
     if (loading) {
         return (
-            <div className="page"><div className="container" style={{ textAlign: 'center', padding: '80px 20px' }}>
-                <div style={{ fontSize: '2rem', marginBottom: '16px' }}>⏳</div><h2>Loading your claims...</h2>
-            </div></div>
+            <div className="page">
+                <div className="container" style={{ textAlign: 'center', padding: '80px' }}>
+                    <h2>Loading your claims…</h2>
+                </div>
+            </div>
         );
     }
 
@@ -42,67 +118,47 @@ export default function ClaimTrackingPage() {
         <div className="page">
             <div className="container">
                 <div className="page-header">
-                    <h1>📊 Track Claims</h1>
-                    <p>View your active claims that are pending review or verification. For resolved claims, check your <Link to="/claim-history" style={{ color: 'var(--accent-teal)' }}>filing history</Link>.</p>
+                    <h1>📊 Claim Tracker & Analytics</h1>
+                    <p>Track, filter, sort, and compare your insurance claims.</p>
                 </div>
-                <div className="tracking-layout">
-                    {activeClaims.length > 0 && (
-                        <>
-                            <div className="search-bar">
-                                <input type="text" className="form-input" placeholder="Search by Claim ID or Policy Number..." value={searchId} onChange={(e) => setSearchId(e.target.value)} onKeyDown={handleKeyDown} />
-                                <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-                                {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>All</button>}
-                            </div>
 
-                            <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', flexWrap: 'wrap' }}>
-                                <span className="badge badge-blue">{activeClaims.filter(c => c.status === 'Submitted').length} Submitted</span>
-                                <span className="badge badge-amber">{activeClaims.filter(c => c.status === 'Under Review').length} Under Review</span>
-                            </div>
-                        </>
-                    )}
-
-                    {displayClaims.map((claim, idx) => (
-                        <div key={claim.id} className="glass-card claim-track-card" style={{ animationDelay: `${idx * 0.1}s` }}>
-                            <div className="claim-track-header">
-                                <div>
-                                    <h3>{claim.id}</h3>
-                                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{claim.policyName}</span>
-                                </div>
-                                <span className={`badge ${statusStyles[claim.status] || 'badge-blue'}`}>{claim.status}</span>
-                            </div>
-                            <div className="claim-meta">
-                                {claim.policyNumber && <div className="claim-meta-item"><span className="label">Policy #</span><span className="value">{claim.policyNumber}</span></div>}
-                                <div className="claim-meta-item"><span className="label">Type</span><span className="value">{claimTypeLabels[claim.claimType] || claim.type || '—'}</span></div>
-                                <div className="claim-meta-item"><span className="label">Amount</span><span className="value">{formatCurrency(claim.amount)}</span></div>
-                                <div className="claim-meta-item"><span className="label">Filed On</span><span className="value">{claim.filedDate}</span></div>
-                            </div>
-                            <div className="timeline">
-                                {claim.timeline.map((item, index) => (
-                                    <div key={index} className={`timeline-item ${item.status}`}>
-                                        <div className="timeline-dot" /><h4>{item.step}</h4>
-                                        {item.date && <div className="timeline-date">{item.date}</div>}
-                                        <div className="timeline-desc">{item.description}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-
-                    {displayClaims.length === 0 && (
-                        <div className="glass-card" style={{ padding: '48px', textAlign: 'center' }}>
-                            <div style={{ fontSize: '3rem', marginBottom: '12px' }}>✅</div>
-                            <h3 style={{ marginBottom: '8px' }}>No active claims</h3>
-                            <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>
-                                {filteredClaims !== null ? 'No pending claims match your search.' : 'All your claims have been resolved! You\'re all clear.'}
-                            </p>
-                            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-                                {filteredClaims !== null && <button className="btn btn-secondary" onClick={() => { setSearchId(''); setFilteredClaims(null); }}>Show All</button>}
-                                <Link to="/claim-history" className="btn btn-secondary">📜 View History</Link>
-                                <Link to="/file-claim" className="btn btn-primary">📋 File a New Claim</Link>
-                            </div>
-                        </div>
-                    )}
+                <div className="search-bar">
+                    <input
+                        className="form-input"
+                        placeholder="Search by Claim ID, Policy Number, or Name"
+                        value={searchId}
+                        onChange={(e) => setSearchId(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                    />
+                    <button className="btn btn-primary" onClick={handleSearch}>
+                        Search
+                    </button>
                 </div>
+
+                {filteredAndSorted.length === 0 ? (
+                    <div className="glass-card" style={{ padding: 40, textAlign: 'center' }}>
+                        <h3>No claims found</h3>
+                        <p>Adjust your filters or search terms.</p>
+                        <button className="btn btn-secondary" onClick={resetFilters}>
+                            Reset Filters
+                        </button>
+                        <Link to="/file-claim" className="btn btn-primary">
+                            File New Claim
+                        </Link>
+                    </div>
+                ) : (
+                    filteredAndSorted.map(claim => (
+                        <div
+                            key={claim.id}
+                            className="glass-card"
+                            onClick={() => toggleClaimSelection(claim.id)}
+                        >
+                            <h3>{claim.id}</h3>
+                            <p>{claim.policyName}</p>
+                            <p>{formatCurrency(claim.amount)}</p>
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );
