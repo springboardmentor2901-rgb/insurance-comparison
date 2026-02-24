@@ -58,11 +58,23 @@ export default function ClaimFilingPage() {
 
     const handleSubmit = async () => {
         setSubmitting(true);
-        const newClaimId = await addClaim(formData);
-        setClaimId(newClaimId || 'N/A');
+        const result = await addClaim(formData);
+
+        if (result.error) {
+            if (result.fraud) {
+                setErrors({ submit: `🛑 FRAUD ALERT: ${result.message}` });
+            } else {
+                setErrors({ submit: `Unable to submit claim: ${result.message}` });
+            }
+            setSubmitting(false);
+            return;
+        }
+
+        setClaimId(result.id || 'N/A');
         setSubmitted(true);
         setSubmitting(false);
     };
+
 
     if (submitted) {
         return (
@@ -155,7 +167,13 @@ export default function ClaimFilingPage() {
                                     <span style={{ color: 'var(--text-muted)' }}>Documents:</span><span>{formData.files.length} file(s)</span>
                                 </div>
                             </div>
+                            {errors.submit && (
+                                <div style={{ marginTop: '16px', padding: '12px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--accent-red)', borderRadius: 'var(--radius-md)', color: 'var(--accent-red)', fontSize: '0.9rem', textAlign: 'center' }}>
+                                    {errors.submit}
+                                </div>
+                            )}
                             <div className="form-actions"><button className="btn btn-secondary" onClick={prevStep}>← Back</button><button className="btn btn-primary" onClick={handleSubmit} disabled={submitting}>{submitting ? '⏳ Submitting...' : '✅ Submit Claim'}</button></div>
+
                         </div>
                     )}
                 </div>

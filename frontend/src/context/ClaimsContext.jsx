@@ -58,14 +58,23 @@ export function ClaimsProvider({ children }) {
                 throw new Error('Failed to create claim: Invalid response from server');
             }
 
-            const newClaim = await res.json();
-            setClaims(prev => [newClaim, ...prev]);
-            return newClaim.id;
+            const data = await res.json();
+
+            if (!res.ok) {
+                if (res.status === 403 && data.error === 'Fraud suspected') {
+                    return { error: true, fraud: true, message: data.details };
+                }
+                throw new Error(data.error || `Server returned ${res.status}`);
+            }
+
+            setClaims(prev => [data, ...prev]);
+            return { id: data.id };
         } catch (err) {
             console.error('Failed to create claim:', err);
-            return null;
+            return { error: true, message: err.message };
         }
     };
+
 
     const refreshClaims = async () => {
         try {

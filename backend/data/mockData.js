@@ -120,38 +120,38 @@ export const policies = [
 export let claims = [
     {
         id: 'CLM-2024-001', policyName: 'HealthGuard Pro', policyNumber: 'POL-2024-HG-4521',
-        type: 'Health', claimType: 'hospitalization', amount: 125000, filedDate: '2024-12-15',
+        type: 'Health', claimType: 'hospitalization', amount: 125000, filedDate: '2026-02-15',
         status: 'Approved', fullName: 'Rahul Sharma', email: 'rahul.sharma@email.com', userId: 1,
         description: 'Hospitalization for appendix surgery at Apollo Hospital.',
         timeline: [
-            { step: 'Claim Filed', date: '2024-12-15', status: 'completed', description: 'Claim submitted with all required documents.' },
-            { step: 'Documents Verified', date: '2024-12-17', status: 'completed', description: 'All documents and medical reports verified successfully.' },
-            { step: 'Under Review', date: '2024-12-19', status: 'completed', description: 'Claim reviewed by the assessment team.' },
-            { step: 'Approved', date: '2024-12-22', status: 'completed', description: 'Claim approved. Amount of ₹1,25,000 will be disbursed.' },
-            { step: 'Amount Disbursed', date: '2024-12-24', status: 'completed', description: 'Amount credited to registered bank account.' }
+            { step: 'Claim Filed', date: '2026-02-15', status: 'completed', description: 'Claim submitted with all required documents.' },
+            { step: 'Documents Verified', date: '2026-02-17', status: 'completed', description: 'All documents and medical reports verified successfully.' },
+            { step: 'Under Review', date: '2026-02-19', status: 'completed', description: 'Claim reviewed by the assessment team.' },
+            { step: 'Approved', date: '2026-02-22', status: 'completed', description: 'Claim approved. Amount of ₹1,25,000 will be disbursed.' },
+            { step: 'Amount Disbursed', date: '2026-02-24', status: 'completed', description: 'Amount credited to registered bank account.' }
         ]
     },
     {
         id: 'CLM-2024-002', policyName: 'AutoShield Premium', policyNumber: 'POL-2024-AS-7832',
-        type: 'Auto', claimType: 'accident', amount: 45000, filedDate: '2025-01-05',
+        type: 'Auto', claimType: 'accident', amount: 45000, filedDate: '2026-02-05',
         status: 'Under Review', fullName: 'Priya Patel', email: 'priya.patel@email.com', userId: 1,
         description: 'Rear-end collision damage on Mumbai-Pune expressway.',
         timeline: [
-            { step: 'Claim Filed', date: '2025-01-05', status: 'completed', description: 'Accident claim submitted with FIR and photos.' },
-            { step: 'Documents Verified', date: '2025-01-07', status: 'completed', description: 'Police report and repair estimate verified.' },
-            { step: 'Under Review', date: '2025-01-09', status: 'current', description: 'Surveyor inspection scheduled. Awaiting assessment report.' },
+            { step: 'Claim Filed', date: '2026-02-05', status: 'completed', description: 'Accident claim submitted with FIR and photos.' },
+            { step: 'Documents Verified', date: '2026-02-07', status: 'completed', description: 'Police report and repair estimate verified.' },
+            { step: 'Under Review', date: '2026-02-09', status: 'current', description: 'Surveyor inspection scheduled. Awaiting assessment report.' },
             { step: 'Approval Pending', date: '', status: 'pending', description: 'Waiting for review completion.' },
             { step: 'Settlement', date: '', status: 'pending', description: 'Amount to be disbursed upon approval.' }
         ]
     },
     {
         id: 'CLM-2025-003', policyName: 'FamilyFirst Plus', policyNumber: 'POL-2025-FF-1290',
-        type: 'Health', claimType: 'hospitalization', amount: 280000, filedDate: '2025-01-20',
+        type: 'Health', claimType: 'hospitalization', amount: 280000, filedDate: '2026-02-20',
         status: 'Submitted', fullName: 'Ankit Verma', email: 'ankit.v@email.com', userId: 3,
         description: 'Emergency hospitalization for dengue treatment.',
         timeline: [
-            { step: 'Claim Filed', date: '2025-01-20', status: 'completed', description: 'Hospitalization claim submitted with discharge summary.' },
-            { step: 'Documents Verification', date: '', status: 'current', description: 'Documents are being reviewed by the verification team.' },
+            { step: 'Claim Filed', date: '2026-02-20', status: 'completed', description: 'Hospitalization claim submitted with discharge summary.' },
+            { step: 'Documents Verification', date: '2026-02-21', status: 'current', description: 'Documents are being reviewed by the verification team.' },
             { step: 'Under Review', date: '', status: 'pending', description: 'Assessment pending.' },
             { step: 'Decision', date: '', status: 'pending', description: 'Awaiting final decision.' },
             { step: 'Settlement', date: '', status: 'pending', description: 'Settlement processing.' }
@@ -159,27 +159,27 @@ export let claims = [
     },
     {
         id: 'CLM-2025-004', policyName: 'HomeSafe 360', policyNumber: 'POL-2024-HS-5567',
-        type: 'Property', claimType: 'property-damage', amount: 520000, filedDate: '2025-02-01',
+        type: 'Property', claimType: 'property-damage', amount: 520000, filedDate: '2026-02-01',
         status: 'Approved', fullName: 'Sneha Joshi', email: 'sneha.j@email.com', userId: 3,
         description: 'Water damage from burst pipe flooding the kitchen and living room.',
         timeline: [
-            { step: 'Claim Filed', date: '2025-02-01', status: 'completed', description: 'Property damage claim filed after water pipe burst.' },
-            { step: 'Documents Verified', date: '2025-02-03', status: 'completed', description: 'Plumber report and photos verified.' },
-            { step: 'Surveyor Visit', date: '2025-02-05', status: 'completed', description: 'On-site inspection completed by surveyor.' },
-            { step: 'Approved', date: '2025-02-08', status: 'completed', description: 'Claim approved for ₹5,20,000.' },
-            { step: 'Amount Disbursed', date: '2025-02-10', status: 'completed', description: 'Settlement amount transferred.' }
+            { step: 'Claim Filed', date: '2026-02-01', status: 'completed', description: 'Property damage claim filed after water pipe burst.' },
+            { step: 'Documents Verified', date: '2026-02-03', status: 'completed', description: 'Plumber report and photos verified.' },
+            { step: 'Surveyor Visit', date: '2026-02-05', status: 'completed', description: 'On-site inspection completed by surveyor.' },
+            { step: 'Approved', date: '2026-02-08', status: 'completed', description: 'Claim approved for ₹5,20,000.' },
+            { step: 'Amount Disbursed', date: '2026-02-10', status: 'completed', description: 'Settlement amount transferred.' }
         ]
     },
     {
         id: 'CLM-2025-005', policyName: 'CyberGuard Elite', policyNumber: 'POL-2025-CG-8891',
-        type: 'Cyber', claimType: 'cyber-fraud', amount: 95000, filedDate: '2025-02-10',
+        type: 'Cyber', claimType: 'cyber-fraud', amount: 95000, filedDate: '2026-02-10',
         status: 'Rejected', fullName: 'Vikram Singh', email: 'vikram.s@email.com', userId: 1,
         description: 'Unauthorized UPI transactions from compromised device.',
         timeline: [
-            { step: 'Claim Filed', date: '2025-02-10', status: 'completed', description: 'Cyber fraud claim submitted with bank statements.' },
-            { step: 'Documents Verified', date: '2025-02-12', status: 'completed', description: 'Bank statements and police complaint verified.' },
-            { step: 'Investigation', date: '2025-02-14', status: 'completed', description: 'Fraud investigation team reviewed the case.' },
-            { step: 'Rejected', date: '2025-02-18', status: 'completed', description: 'Claim rejected — incident occurred outside policy coverage period.' }
+            { step: 'Claim Filed', date: '2026-02-10', status: 'completed', description: 'Cyber fraud claim submitted with bank statements.' },
+            { step: 'Documents Verified', date: '2026-02-12', status: 'completed', description: 'Bank statements and police complaint verified.' },
+            { step: 'Investigation', date: '2026-02-14', status: 'completed', description: 'Fraud investigation team reviewed the case.' },
+            { step: 'Rejected', date: '2026-02-18', status: 'completed', description: 'Claim rejected — incident occurred outside policy coverage period.' }
         ]
     }
 ];
