@@ -146,17 +146,18 @@ export let claims = [
     },
     {
         id: 'CLM-2025-003', policyName: 'FamilyFirst Plus', policyNumber: 'POL-2025-FF-1290',
-        type: 'Health', claimType: 'hospitalization', amount: 280000, filedDate: '2026-02-20',
+        type: 'Health', claimType: 'hospitalization', amount: 280000, filedDate: '2026-02-25',
         status: 'Submitted', fullName: 'Ankit Verma', email: 'ankit.v@email.com', userId: 3,
         description: 'Emergency hospitalization for dengue treatment.',
         timeline: [
-            { step: 'Claim Filed', date: '2026-02-20', status: 'completed', description: 'Hospitalization claim submitted with discharge summary.' },
-            { step: 'Documents Verification', date: '2026-02-21', status: 'current', description: 'Documents are being reviewed by the verification team.' },
+            { step: 'Claim Filed', date: '2026-02-25', status: 'completed', description: 'Hospitalization claim submitted with discharge summary.' },
+            { step: 'Documents Verification', date: '2026-02-25', status: 'current', description: 'Documents are being reviewed by the verification team.' },
             { step: 'Under Review', date: '', status: 'pending', description: 'Assessment pending.' },
             { step: 'Decision', date: '', status: 'pending', description: 'Awaiting final decision.' },
             { step: 'Settlement', date: '', status: 'pending', description: 'Settlement processing.' }
         ]
     },
+
     {
         id: 'CLM-2025-004', policyName: 'HomeSafe 360', policyNumber: 'POL-2024-HS-5567',
         type: 'Property', claimType: 'property-damage', amount: 520000, filedDate: '2026-02-01',
@@ -284,7 +285,9 @@ let claimCounter = claims.length;
 export function addClaim(claimData) {
     claimCounter++;
     const claimId = `CLM-2025-${String(claimCounter).padStart(3, '0')}`;
-    const today = new Date().toISOString().split('T')[0];
+    const now = new Date();
+    const isoDate = now.toISOString();
+    const dateOnly = isoDate.split('T')[0];
 
     const newClaim = {
         id: claimId,
@@ -293,7 +296,7 @@ export function addClaim(claimData) {
         type: claimData.claimType || 'General',
         claimType: claimData.claimType,
         amount: null,
-        filedDate: today,
+        filedDate: isoDate,
         status: 'Submitted',
         fullName: claimData.fullName,
         email: claimData.email,
@@ -302,7 +305,7 @@ export function addClaim(claimData) {
         description: claimData.description,
         filesCount: claimData.filesCount || 0,
         timeline: [
-            { step: 'Claim Filed', date: today, status: 'completed', description: `Claim submitted by ${claimData.fullName}. ${claimData.filesCount || 0} document(s) uploaded.` },
+            { step: 'Claim Filed', date: dateOnly, status: 'completed', description: `Claim submitted by ${claimData.fullName}. ${claimData.filesCount || 0} document(s) uploaded.` },
             { step: 'Documents Verification', date: '', status: 'current', description: 'Your documents are being verified by our team. This usually takes 1-2 business days.' },
             { step: 'Under Review', date: '', status: 'pending', description: 'Claim will be assessed by our review team.' },
             { step: 'Decision', date: '', status: 'pending', description: 'Final decision on claim approval.' },
@@ -313,3 +316,4 @@ export function addClaim(claimData) {
     claims.unshift(newClaim);
     return newClaim;
 }
+
