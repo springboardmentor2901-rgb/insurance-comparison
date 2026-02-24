@@ -67,7 +67,7 @@ export default function RegisterPage() {
                 <div className="login-branding">
                     <div className="branding-content">
                         <div className="branding-logo">🛡️</div>
-                        <h1>InsureVault</h1>
+                        <h1>InsureCompare</h1>
                         <p>Your trusted partner for insurance comparison, claims, and financial protection.</p>
                         <div className="branding-features">
                             <div className="branding-feature"><span className="bf-icon">🔍</span><span>Compare 21+ policies</span></div>
@@ -81,7 +81,7 @@ export default function RegisterPage() {
                 <div className="login-form-panel">
                     <form className="login-form" onSubmit={handleSubmit}>
                         <h2 className="login-title">Create Account</h2>
-                        <p className="login-subtitle">Join InsureVault to protect what matters most</p>
+                        <p className="login-subtitle">Join InsureCompare to protect what matters most</p>
 
                         {infoMsg && <div className="login-info">{infoMsg}</div>}
                         {apiError && <div className="login-alert">{apiError}</div>}

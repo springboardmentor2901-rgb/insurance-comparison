@@ -1,15 +1,30 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 
 const ClaimsContext = createContext();
 
 export function ClaimsProvider({ children }) {
     const [claims, setClaims] = useState([]);
     const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
-    // Fetch claims from backend on mount
+    // Fetch claims from backend on mount — filtered by userId for regular users
     useEffect(() => {
-        fetch('/api/claims')
-            .then(res => res.json())
+        if (!user) {
+            setClaims([]);
+            setLoading(false);
+            return;
+        }
+
+        const url = user.role === 'admin' ? '/api/claims' : `/api/claims?userId=${user.id}`;
+        fetch(url)
+            .then(res => {
+                const contentType = res.headers.get('content-type');
+                if (!res.ok || !contentType || !contentType.includes('application/json')) {
+                    throw new Error('Failed to fetch claims: Invalid response from server');
+                }
+                return res.json();
+            })
             .then(data => {
                 setClaims(data);
                 setLoading(false);
@@ -18,7 +33,7 @@ export function ClaimsProvider({ children }) {
                 console.error('Failed to fetch claims:', err);
                 setLoading(false);
             });
-    }, []);
+    }, [user]);
 
     const addClaim = async (claimData) => {
         try {
@@ -33,9 +48,16 @@ export function ClaimsProvider({ children }) {
                     claimType: claimData.claimType,
                     incidentDate: claimData.incidentDate,
                     description: claimData.description,
-                    filesCount: claimData.files?.length || 0
+                    filesCount: claimData.files?.length || 0,
+                    userId: user?.id || null
                 })
             });
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Failed to create claim: Invalid response from server');
+            }
+
             const newClaim = await res.json();
             setClaims(prev => [newClaim, ...prev]);
             return newClaim.id;
@@ -47,7 +69,14 @@ export function ClaimsProvider({ children }) {
 
     const refreshClaims = async () => {
         try {
-            const res = await fetch('/api/claims');
+            const url = user?.role === 'admin' ? '/api/claims' : `/api/claims?userId=${user?.id}`;
+            const res = await fetch(url);
+
+            const contentType = res.headers.get('content-type');
+            if (!res.ok || !contentType || !contentType.includes('application/json')) {
+                throw new Error('Failed to refresh claims: Invalid response from server');
+            }
+
             const data = await res.json();
             setClaims(data);
         } catch (err) {

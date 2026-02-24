@@ -17,15 +17,20 @@ export default function LandingPage() {
                         Your all-in-one platform to compare insurance policies, calculate premiums,
                         get personalized recommendations, and manage claims — all in one place.
                     </p>
-                    <div className="hero-buttons">
-                        <Link to="/compare" className="btn btn-primary btn-lg">
+                    <div className="hero-buttons" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                        <Link to="/compare" className="btn btn-primary btn-lg" style={{ width: '100%', maxWidth: '400px' }}>
                             🔍 Compare Policies
                         </Link>
-                        <Link to="/calculator" className="btn btn-outline btn-lg">
-                            🧮 Premium Calculator
-                        </Link>
-                        <Link to="/file-claim" className="btn btn-secondary btn-lg">
-                            📋 File a Claim
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', width: '100%', maxWidth: '400px' }}>
+                            <Link to="/calculator" className="btn btn-primary btn-lg">
+                                🧮 Premium Calculator
+                            </Link>
+                            <Link to="/file-claim" className="btn btn-primary btn-lg">
+                                📋 File a Claim
+                            </Link>
+                        </div>
+                        <Link to="/compare" className="btn btn-primary btn-lg" style={{ width: '100%', maxWidth: '400px' }}>
+                            🚀 Get Started
                         </Link>
                     </div>
                 </div>

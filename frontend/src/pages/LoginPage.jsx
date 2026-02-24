@@ -43,12 +43,15 @@ export default function LoginPage() {
         setApiError('');
         setSuccessMsg('');
         try {
-            await login(formData.email, formData.password);
-            navigate('/');
+            const user = await login(formData.email, formData.password);
+            if (user?.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             if (err.code === 'NOT_FOUND') {
-                // Account doesn't exist — redirect to register with pre-filled email
-                navigate('/register', { state: { email: formData.email, notFound: true } });
+                setApiError('No account found with this email. Please check your credentials or register below.');
             } else {
                 setApiError(err.message || 'Something went wrong. Please try again.');
             }
@@ -68,7 +71,7 @@ export default function LoginPage() {
                 <div className="login-branding">
                     <div className="branding-content">
                         <div className="branding-logo">🛡️</div>
-                        <h1>InsureVault</h1>
+                        <h1>InsureCompare</h1>
                         <p>Your trusted partner for insurance comparison, claims, and financial protection.</p>
                         <div className="branding-features">
                             <div className="branding-feature"><span className="bf-icon">🔍</span><span>Compare 21+ policies</span></div>
@@ -125,7 +128,8 @@ export default function LoginPage() {
                         </button>
 
                         <div className="demo-hint">
-                            <strong>Demo:</strong> demo@insurance.com / demo123
+                            <strong>User:</strong> demo@insurance.com / demo123<br />
+                            <strong>Admin:</strong> admin@insurance.com / admin123
                         </div>
 
                         <div className="login-switch">

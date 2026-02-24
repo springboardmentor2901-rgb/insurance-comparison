@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\"",
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -15,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.2.1",
     "vite": "^6.0.0"
   }
 }

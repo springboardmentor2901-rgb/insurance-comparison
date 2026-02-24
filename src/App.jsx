@@ -5,6 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import ProfilePage from './pages/ProfilePage';
 import QuoteFormPage from './pages/QuoteFormPage';
 import QuoteResultsPage from './pages/QuoteResultsPage';
 import PolicyComparatorPage from './pages/PolicyComparatorPage';
@@ -27,7 +28,6 @@ function ProtectedRoute({ children }) {
 
 function AppContent() {
     const { isAuthenticated } = useAuth();
-    const isLogin = window.location.pathname === '/login';
 
     return (
         <>
@@ -36,6 +36,7 @@ function AppContent() {
                 <Routes>
                     <Route path="/login" element={isAuthenticated ? <Navigate to="/" replace /> : <LoginPage />} />
                     <Route path="/" element={<ProtectedRoute><LandingPage /></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
                     <Route path="/get-quote" element={<ProtectedRoute><QuoteFormPage /></ProtectedRoute>} />
                     <Route path="/quote-results" element={<ProtectedRoute><QuoteResultsPage /></ProtectedRoute>} />
                     <Route path="/compare" element={<ProtectedRoute><PolicyComparatorPage /></ProtectedRoute>} />
