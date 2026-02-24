@@ -1,0 +1,51 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Policies | Insurance Assist{% endblock %}
+
+{% block content %}
+<h1>Insurance Policies</h1>
+
+<!-- Filter & Sort Options -->
+<div class="filters">
+    <form method="GET" action="/policies">
+        <label for="policy_type">Filter by Type:</label>
+        <select name="policy_type" id="policy_type">
+            <option value="">All</option>
+            <option value="Health">Health</option>
+            <option value="Life">Life</option>
+            <option value="Vehicle">Vehicle</option>
+            <option value="Travel">Travel</option>
+        </select>
+
+        <label for="sort_by">Sort by:</label>
+        <select name="sort_by" id="sort_by">
+            <option value="">None</option>
+            <option value="premium">Premium</option>
+            <option value="coverage_amount">Coverage</option>
+        </select>
+
+        <button type="submit">Apply</button>
+    </form>
+</div>
+
+<table class="policy-table">
+    <tr>
+        <th>Company</th>
+        <th>Policy Name</th>
+        <th>Type</th>
+        <th>Coverage</th>
+        <th>Premium</th>
+        <th>Description</th>
+    </tr>
+    {% for policy in policies %}
+    <tr {% if policy[4] <= 1000 %}style="background-color:#e6ffe6"{% endif %}>
+        <td>{{ policy[1] }}</td>
+        <td>{{ policy[2] }}</td>
+        <td>{{ policy[5] }}</td>
+        <td>{{ policy[3] }}</td>
+        <td>{{ policy[4] }}</td>
+        <td>{{ policy[6] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

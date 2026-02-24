@@ -1,3 +1,4 @@
+
 //P
 import { policies } from "./data/mockData.js";
 import { connectDB } from './config/database.js';
@@ -12,13 +13,18 @@ import calculatorRouter from './routes/calculator.js';
 import authRouter from './routes/auth.js';
 import quotesRouter from './routes/quotes.js';
 import adminRouter from './routes/admin.js';
+import fraudDetectionRoutes from './routes/fraudDetection.js';
 
 const app = express();
+app.use(express.json()); // MUST be before routes
+
+app.use('/api/fraud-detection', fraudDetectionRoutes);
 const PORT = 5000;
 
 // Middleware
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 app.use(express.json());
+
 
 // Request logging
 app.use((req, res, next) => {

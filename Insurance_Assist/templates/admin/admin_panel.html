@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="admin-header">
+    <h2>Insurance Assist — Admin Panel</h2>
+    <a href="/admin/logout">Logout</a>
+</div>
+
+<div class="admin-container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <a href="/admin/add_policy" class="btn-primary">➕ Add Policy</a>
+
+    <table class="admin-table">
+        <tr>
+            <th>Company</th>
+            <th>Policy</th>
+            <th>Type</th>
+            <th>Coverage</th>
+            <th>Premium</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for policy in policies %}
+        <tr>
+            <td>{{ policy[1] }}</td>
+            <td>{{ policy[2] }}</td>
+            <td>{{ policy[5] }}</td>
+            <td>{{ policy[3] }}</td>
+            <td>{{ policy[4] }}</td>
+            <td>
+                <a href="/admin/edit_policy/{{ policy[0] }}">Edit</a> |
+                <a href="/admin/delete_policy/{{ policy[0] }}"
+                   onclick="return confirm('Delete policy?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+</div>
+</body>
+</html>

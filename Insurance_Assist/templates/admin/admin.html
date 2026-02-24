@@ -1,0 +1,35 @@
+{% extends 'common/base.html' %}
+
+{% block title %}Admin Panel | Insurance Assist{% endblock %}
+
+{% block content %}
+<h1>Admin Panel - Manage Policies</h1>
+
+<a href="/admin/add_policy" class="btn-add">Add New Policy</a>
+
+<table class="policy-table">
+    <tr>
+        <th>Company</th>
+        <th>Policy Name</th>
+        <th>Type</th>
+        <th>Coverage</th>
+        <th>Premium</th>
+        <th>Description</th>
+        <th>Actions</th>
+    </tr>
+    {% for policy in policies %}
+    <tr>
+        <td>{{ policy[1] }}</td>
+        <td>{{ policy[2] }}</td>
+        <td>{{ policy[5] }}</td>
+        <td>{{ policy[3] }}</td>
+        <td>{{ policy[4] }}</td>
+        <td>{{ policy[6] }}</td>
+        <td>
+            <a href="/admin/edit_policy/{{ policy[0] }}">Edit</a> |
+            <a href="/admin/delete_policy/{{ policy[0] }}" onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

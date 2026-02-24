@@ -42,7 +42,18 @@ const Policy = sequelize.define(
         model: 'providers',
         key: 'id'
       }
-    }
+    },
+
+    //Fraud
+    risk_score: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    
+    claim_count: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
     
   },
   {

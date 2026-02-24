@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Insurance Assist{% endblock %}</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">InsuranceAssist</div>
+        <ul class="nav-links">
+            <li><a href="#">Home</a></li>
+            <li><a href="/policies">Compare</a></li>
+            <li><a href="#">Recommend</a></li>
+            <li><a href="#">Claims</a></li>
+            <li><a href="/login">Login</a></li>
+
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2026 Insurance Assist. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

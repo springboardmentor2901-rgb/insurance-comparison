@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Policy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="admin-header">
+        <h2>Insurance Assist — Admin Panel</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn-logout">Back</a>
+    </div>
+    <div class="admin-container">
+        <h2>Edit Policy</h2>
+        
+        <form method="POST" class="admin-form">
+
+            <label>Company</label>
+            <input type="text" name="company_name" value="{{ policy['company_name'] }}" required>
+
+            <label>Policy Name</label>
+            <input type="text" name="policy_name" value="{{ policy['policy_name'] }}" required>
+
+            <label>Coverage</label>
+            <input type="text" name="coverage_amount" value="{{ policy['coverage_amount'] }}" required>
+
+            <label>Premium</label>
+            <input type="number" name="premium" value="{{ policy['premium'] }}" required>
+
+            <label>Policy Type</label>
+            <input type="text" name="policy_type" value="{{ policy['policy_type'] }}" required>
+
+            <label>Description</label>
+            <input type="text" name="description" value="{{ policy['description'] }}" required>
+            <button type="submit">Update Policy</button>
+        </form>
+    </div>
+</body>
+</html>
+
+

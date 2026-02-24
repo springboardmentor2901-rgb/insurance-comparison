@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Policy</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Use the same header as dashboard -->
+    <div class="admin-header">
+        <h2>Insurance Assist — Admin Panel</h2>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn-logout">Back</a>
+    </div>
+
+    <div class="admin-container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% for category, message in messages %}
+            <div class="alert {{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endwith %}
+
+        <!-- Add Policy Form -->
+        <form method="POST" class="admin-form">
+            <label>Company:</label>
+            <input type="text" name="company_name" required>
+
+            <label>Policy Name:</label>
+            <input type="text" name="policy_name" required>
+
+            <label>Coverage:</label>
+            <input type="text" name="coverage_amount" required>
+
+            <label>Premium:</label>
+            <input type="text" name="premium" required>
+
+            <label>Policy Type:</label>
+            <input type="text" name="policy_type" required>
+            <label>Description:</label>
+            <input type="text" name="description" required>
+            <button type="submit" class="btn-primary">Add Policy</button>
+        </form>
+    
+        
+
+    </div>
+</body>
+</html>
+
