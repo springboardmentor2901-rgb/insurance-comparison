@@ -14,6 +14,7 @@ import RecommendationsPage from './pages/RecommendationsPage';
 import ClaimFilingPage from './pages/ClaimFilingPage';
 import ClaimTrackingPage from './pages/ClaimTrackingPage';
 import ClaimHistoryPage from './pages/ClaimHistoryPage';
+import PolicyDetailsPage from './pages/PolicyDetailsPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 function ProtectedRoute({ children }) {
@@ -42,6 +43,7 @@ function AppRoutes() {
             <Route path="/get-quote" element={<ProtectedRoute><QuoteFormPage /></ProtectedRoute>} />
             <Route path="/quote-results" element={<ProtectedRoute><QuoteResultsPage /></ProtectedRoute>} />
             <Route path="/compare" element={<ProtectedRoute><PolicyComparatorPage /></ProtectedRoute>} />
+            <Route path="/policies/:id" element={<ProtectedRoute><PolicyDetailsPage /></ProtectedRoute>} />
             <Route path="/calculator" element={<ProtectedRoute><PremiumCalculatorPage /></ProtectedRoute>} />
             <Route path="/recommendations" element={<ProtectedRoute><RecommendationsPage /></ProtectedRoute>} />
             <Route path="/file-claim" element={<ProtectedRoute><ClaimFilingPage /></ProtectedRoute>} />
@@ -58,7 +60,7 @@ function AppLayout() {
     const isAdminPage = location.pathname.startsWith('/admin');
     return (
         <>
-            {isAuthenticated && <Navbar />}
+            {isAuthenticated && !isAdminPage && <Navbar />}
             <main>
                 <AppRoutes />
             </main>

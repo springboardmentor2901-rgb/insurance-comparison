@@ -21,33 +21,56 @@ export function AuthProvider({ children }) {
     }, [token]);
 
     const login = async (email, password) => {
-        const res = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-        if (!res.ok) {
-            const err = new Error(data.error);
-            err.code = data.code;
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            // Handle non-JSON responses (e.g., if server is down or returns HTML error)
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned an invalid response. Please check if the backend is running.');
+            }
+
+            const data = await res.json();
+            if (!res.ok) {
+                const err = new Error(data.error || 'Login failed');
+                err.code = data.code;
+                throw err;
+            }
+            localStorage.setItem('auth_token', data.token);
+            setToken(data.token);
+            setUser(data.user);
+            return data.user;
+        } catch (err) {
+            console.error('Login error:', err);
             throw err;
         }
-        localStorage.setItem('auth_token', data.token);
-        setToken(data.token);
-        setUser(data.user);
-        return data.user;
     };
 
     const register = async (fullName, email, password, phone) => {
-        const res = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ fullName, email, password, phone })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        // Do NOT auto-login — user must log in manually after registration
-        return { success: true, message: 'Registration successful! Please log in.' };
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullName, email, password, phone })
+            });
+
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('Server returned an invalid response. Please check if the backend is running.');
+            }
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Registration failed');
+            // Do NOT auto-login — user must log in manually after registration
+            return { success: true, message: 'Registration successful! Please log in.' };
+        } catch (err) {
+            console.error('Registration error:', err);
+            throw err;
+        }
     };
 
     const logout = () => {

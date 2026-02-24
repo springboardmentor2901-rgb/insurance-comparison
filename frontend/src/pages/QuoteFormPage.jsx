@@ -112,10 +112,15 @@ export default function QuoteFormPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ ...formData, age: getAge() })
             });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+            }
             const data = await res.json();
             navigate('/quote-results', { state: { quotes: data.quotes, summary: data.summary, formData } });
         } catch (err) {
             console.error('Failed to generate quotes:', err);
+            setErrors({ submit: err.message || 'Failed to generate quotes' });
         }
         setLoading(false);
     };

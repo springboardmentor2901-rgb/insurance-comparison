@@ -10,9 +10,20 @@ export default function AdminPolicies() {
 
     useEffect(() => {
         fetch('/api/policies')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    console.error(`Policies fetch failed: ${res.status} ${res.statusText}`);
+                    return res.text().then(text => {
+                        throw new Error(`API Error ${res.status}: ${text || 'Empty response'}`);
+                    });
+                }
+                return res.json();
+            })
             .then(data => { setPolicies(data.policies || []); setLoading(false); })
-            .catch(() => setLoading(false));
+            .catch(err => {
+                console.error('AdminPolicies fetch error:', err);
+                setLoading(false);
+            });
     }, []);
 
     const fmt = (v) => '₹' + (v || 0).toLocaleString('en-IN');

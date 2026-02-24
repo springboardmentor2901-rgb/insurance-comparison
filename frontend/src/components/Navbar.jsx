@@ -63,7 +63,6 @@ export default function Navbar() {
                             <NavLink to="/get-quote" onClick={() => setMenuOpen(false)}>Get Quote</NavLink>
                             <NavLink to="/compare" onClick={() => setMenuOpen(false)}>Compare</NavLink>
                             <NavLink to="/calculator" onClick={() => setMenuOpen(false)}>Calculator</NavLink>
-                            <NavLink to="/recommendations" onClick={() => setMenuOpen(false)}>For You</NavLink>
                             <NavLink to="/file-claim" onClick={() => setMenuOpen(false)}>File Claim</NavLink>
                             <NavLink to="/track-claim" onClick={() => setMenuOpen(false)}>Track</NavLink>
                             <NavLink to="/claim-history" onClick={() => setMenuOpen(false)}>History</NavLink>
