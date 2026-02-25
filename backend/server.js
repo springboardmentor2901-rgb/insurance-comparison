@@ -7,6 +7,8 @@ import calculatorRouter from './routes/calculator.js';
 import authRouter from './routes/auth.js';
 import quotesRouter from './routes/quotes.js';
 import adminRouter from './routes/admin.js';
+import { fraudDetectionMiddleware } from './utils/fraudDetection.js';
+import { claims } from './data/mockData.js';
 
 const app = express();
 const PORT = 5000;
@@ -14,6 +16,10 @@ const PORT = 5000;
 // Middleware
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 app.use(express.json());
+
+// Fraud Detection Middleware (Place before routes)
+app.use(fraudDetectionMiddleware({ claimsStore: claims }));
+
 
 // Request logging
 app.use((req, res, next) => {
