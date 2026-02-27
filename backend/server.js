@@ -1,9 +1,9 @@
-//P
 import { connectDB } from './config/database.js';
 import User from './models/User.js';
-//P
+
 import express from 'express';
 import cors from 'cors';
+
 import policiesRouter from './routes/policies.js';
 import claimsRouter from './routes/claims.js';
 import recommendationsRouter from './routes/recommendations.js';
@@ -13,7 +13,7 @@ import quotesRouter from './routes/quotes.js';
 import adminRouter from './routes/admin.js';
 
 const app = express();
-const PORT = 5001;
+const PORT = 5002;
 
 // Middleware
 app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
@@ -21,8 +21,8 @@ app.use(express.json());
 
 // Request logging
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} | ${req.method} ${req.url}`);
-    next();
+  console.log(`${new Date().toISOString()} | ${req.method} ${req.url}`);
+  next();
 });
 
 // Routes
@@ -36,36 +36,37 @@ app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Insurance API is running' });
+  res.json({ status: 'ok', message: 'Insurance API is running' });
 });
 
-//P
+// ✅ Start Server ONLY ONCE
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
+    await User.sync();
 
-  await User.sync();
-  console.log('✅ User table synced');
+    console.log('✅ Database connected successfully');
+    console.log('✅ User table synced');
 
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+    app.listen(PORT, () => {
+      console.log(`\n🚀 Insurance Backend API running at http://localhost:${PORT}`);
+      console.log(`   Endpoints:`);
+      console.log(`   POST /api/auth/register`);
+      console.log(`   POST /api/auth/login`);
+      console.log(`   GET  /api/auth/me`);
+      console.log(`   GET  /api/policies`);
+      console.log(`   GET  /api/claims`);
+      console.log(`   POST /api/claims`);
+      console.log(`   POST /api/recommendations`);
+      console.log(`   POST /api/calculator`);
+      console.log(`   POST /api/quotes`);
+      console.log(`   GET  /api/admin/*`);
+      console.log(`   GET  /api/health\n`);
+    });
+
+  } catch (error) {
+    console.error("❌ Server failed to start:", error);
+  }
 };
 
 startServer();
-
-// Start server
-app.listen(PORT, () => {
-    console.log(`\n🚀 Insurance Backend API running at http://localhost:${PORT}`);
-    console.log(`   Endpoints:`);
-    console.log(`   POST /api/auth/register`);
-    console.log(`   POST /api/auth/login`);
-    console.log(`   GET  /api/auth/me`);
-    console.log(`   GET  /api/policies`);
-    console.log(`   GET  /api/claims`);
-    console.log(`   POST /api/claims`);
-    console.log(`   POST /api/recommendations`);
-    console.log(`   POST /api/calculator`);
-    console.log(`   POST /api/quotes`);
-    console.log(`   GET  /api/admin/* (dashboard, clients, agents, billing, compliance, support)`);
-    console.log(`   GET  /api/health\n`);
-});
