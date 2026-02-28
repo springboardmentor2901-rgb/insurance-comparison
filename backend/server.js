@@ -57,3 +57,32 @@ app.listen(PORT, () => {
     console.log(`   GET  /api/admin/* (dashboard, clients, agents, billing, compliance, support)`);
     console.log(`   GET  /api/health\n`);
 });
+
+// Base URL:
+// http://localhost:5000/
+
+// HEALTH CHECK
+// http://localhost:5000/api/health
+
+// POLICIES
+// http://localhost:5000/api/policies
+// http://localhost:5000/api/policies/id
+
+// CLAIMS
+// http://localhost:5000/api/claims
+// http://localhost:5000/api/claims/id
+
+// RECOMMENDATIONS
+// http://localhost:5000/api/recommendations
+
+// CALCULATOR
+// http://localhost:5000/api/calculator
+
+// QUOTES
+// http://localhost:5000/api/quotes
+
+// AUTH ROUTES
+// http://localhost:5000/api/auth
+
+// ADMIN ROUTES (Protected)
+// http://localhost:5000/api/admin
