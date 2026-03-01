@@ -4,13 +4,22 @@ import policiesRouter from './routes/policies.js';
 import claimsRouter from './routes/claims.js';
 import recommendationsRouter from './routes/recommendations.js';
 import calculatorRouter from './routes/calculator.js';
+import authRouter from './routes/auth.js';
+import quotesRouter from './routes/quotes.js';
+import adminRouter from './routes/admin.js';
+import { fraudDetectionMiddleware } from './utils/fraudDetection.js';
+import { claims } from './data/mockData.js';
 
 const app = express();
 const PORT = 5000;
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: ['http://localhost:5173', 'http://localhost:5174'] }));
 app.use(express.json());
+
+// Fraud Detection Middleware (Place before routes)
+app.use(fraudDetectionMiddleware({ claimsStore: claims }));
+
 
 // Request logging
 app.use((req, res, next) => {
@@ -19,10 +28,13 @@ app.use((req, res, next) => {
 });
 
 // Routes
+app.use('/api/auth', authRouter);
 app.use('/api/policies', policiesRouter);
 app.use('/api/claims', claimsRouter);
 app.use('/api/recommendations', recommendationsRouter);
 app.use('/api/calculator', calculatorRouter);
+app.use('/api/quotes', quotesRouter);
+app.use('/api/admin', adminRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
@@ -33,12 +45,15 @@ app.get('/api/health', (req, res) => {
 app.listen(PORT, () => {
     console.log(`\n🚀 Insurance Backend API running at http://localhost:${PORT}`);
     console.log(`   Endpoints:`);
+    console.log(`   POST /api/auth/register`);
+    console.log(`   POST /api/auth/login`);
+    console.log(`   GET  /api/auth/me`);
     console.log(`   GET  /api/policies`);
-    console.log(`   GET  /api/policies/:id`);
     console.log(`   GET  /api/claims`);
-    console.log(`   GET  /api/claims/:id`);
     console.log(`   POST /api/claims`);
     console.log(`   POST /api/recommendations`);
     console.log(`   POST /api/calculator`);
+    console.log(`   POST /api/quotes`);
+    console.log(`   GET  /api/admin/* (dashboard, clients, agents, billing, compliance, support)`);
     console.log(`   GET  /api/health\n`);
 });
