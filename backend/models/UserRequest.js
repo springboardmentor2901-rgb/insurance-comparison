@@ -1,7 +1,9 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database.js';
+
 import User from './User.js';
 import Policy from './Policy.js';
+
 
 const UserRequest = sequelize.define(
   'UserRequest',
@@ -11,6 +13,7 @@ const UserRequest = sequelize.define(
       autoIncrement: true,
       primaryKey: true
     },
+
 
     request_type: {
       type: DataTypes.STRING,
@@ -34,11 +37,13 @@ const UserRequest = sequelize.define(
 
     user_id: {
       type: DataTypes.INTEGER,
+
       references: {
         model: 'users',
         key: 'id'
       }
     },
+
 
     policy_id: {
       type: DataTypes.INTEGER,
@@ -46,6 +51,8 @@ const UserRequest = sequelize.define(
         model: 'policies',
         key: 'id'
       }
+
+
     }
   },
   {
@@ -53,6 +60,7 @@ const UserRequest = sequelize.define(
     timestamps: true
   }
 );
+
 
 /* Relationships */
 User.hasMany(UserRequest, { foreignKey: 'user_id' });
@@ -62,3 +70,4 @@ Policy.hasMany(UserRequest, { foreignKey: 'policy_id' });
 UserRequest.belongsTo(Policy, { foreignKey: 'policy_id' });
 
 export default UserRequest;
+

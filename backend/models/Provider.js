@@ -20,6 +20,7 @@ const Provider = sequelize.define(
       allowNull: false
     },
 
+
     contact_email: {
       type: DataTypes.STRING,
       allowNull: true
@@ -27,6 +28,7 @@ const Provider = sequelize.define(
 
     rating: {
       type: DataTypes.FLOAT,
+
       allowNull: true
     }
   },
@@ -36,4 +38,6 @@ const Provider = sequelize.define(
   }
 );
 
+
 export default Provider;
+
