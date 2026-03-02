@@ -21,10 +21,6 @@ const Policy = sequelize.define(
       allowNull: false
     },
 
-    min_age: {
-      type: DataTypes.INTEGER,
-      allowNull: true
-    },
 
     coverage_amount: {
       type: DataTypes.FLOAT,
@@ -60,4 +56,6 @@ const Policy = sequelize.define(
 Provider.hasMany(Policy, { foreignKey: 'provider_id' });
 Policy.belongsTo(Provider, { foreignKey: 'provider_id' });
 
+
 export default Policy;
+

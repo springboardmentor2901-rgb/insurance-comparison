@@ -1,3 +1,8 @@
+//P
+import { policies } from "./data/mockData.js";
+import { connectDB } from './config/database.js';
+import User from './models/User.js';
+//P
 import express from 'express';
 import cors from 'cors';
 import policiesRouter from './routes/policies.js';
@@ -40,6 +45,24 @@ app.use('/api/admin', adminRouter);
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Insurance API is running' });
 });
+
+
+//might delete 
+app.get("/api/policies", (req, res) => {
+  res.json(policies);
+});
+
+//P
+const startServer = async () => {
+  await connectDB();
+
+  await User.sync();
+  console.log('✅ User table synced');
+
+ 
+};
+
+startServer();
 
 // Start server
 app.listen(PORT, () => {

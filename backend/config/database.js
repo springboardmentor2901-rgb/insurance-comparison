@@ -1,3 +1,4 @@
+
 import path from 'path';
 import { Sequelize } from 'sequelize';
 import { fileURLToPath } from 'url';
@@ -14,10 +15,12 @@ const sequelize = new Sequelize({
 export const connectDB = async () => {
   try {
     await sequelize.authenticate();
-    console.log('Database connected successfully');
+
+    console.log('✅ Database connected successfully');
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error('❌ Database connection failed:', error);
   }
 };
 
 export { sequelize };
+
